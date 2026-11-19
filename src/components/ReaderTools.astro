@@ -1,0 +1,48 @@
+<!-- 原生对话框提供焦点约束与 Escape 关闭，原图仍可独立打开。 -->
+<dialog class="image-viewer" aria-label="笔记图片预览">
+  <div class="viewer-toolbar"><span id="viewer-caption">图片预览</span><div><button type="button" id="image-zoom">原始尺寸</button><a id="image-original" target="_blank" rel="noopener noreferrer">打开原图 ↗</a><button type="button" id="image-close" aria-label="关闭图片预览">关闭 ×</button></div></div>
+  <div class="viewer-canvas"><img id="viewer-image" alt="" /></div>
+</dialog>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('.image-viewer')!;
+  const preview = document.querySelector<HTMLImageElement>('#viewer-image')!;
+  const zoom = document.querySelector<HTMLButtonElement>('#image-zoom')!;
+  let trigger: HTMLElement | null = null;
+  let previousOverflow = '';
+  // 将正文截图变为可键盘操作的按钮，不改变被链接图片的原有行为。
+  document.querySelectorAll<HTMLImageElement>('.prose img').forEach(img => {
+    if (img.closest('a')) return;
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'image-trigger';
+    button.setAttribute('aria-label', `放大图片：${img.alt || '笔记截图'}`);
+    img.before(button); button.append(img);
+    button.addEventListener('click', () => {
+      trigger = button;
+      preview.src = img.currentSrc || img.src; preview.alt = img.alt;
+      document.querySelector('#viewer-caption')!.textContent = img.alt || '笔记截图';
+      (document.querySelector('#image-original') as HTMLAnchorElement).href = preview.src;
+      dialog.classList.remove('original-size'); zoom.textContent = '原始尺寸';
+      previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden'; dialog.showModal();
+    });
+  });
+  zoom.addEventListener('click', () => { zoom.textContent = dialog.classList.toggle('original-size') ? '适应窗口' : '原始尺寸'; });
+  document.querySelector('#image-close')!.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+  dialog.addEventListener('close', () => { document.body.style.overflow = previousOverflow; trigger?.focus({ preventScroll: true }); });
+
+  // 根据标题实际位置更新目录；滚动只在下一帧计算一次。
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc a'));
+  const sections = links.map(link => document.getElementById(decodeURIComponent(link.hash.slice(1))));
+  let scheduled = false;
+  function updateSection() {
+    let current = 0;
+    sections.forEach((heading, index) => { if (heading && heading.getBoundingClientRect().top <= 140) current = index; });
+    links.forEach((link, index) => { if (index === current) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current'); });
+    scheduled = false;
+  }
+  const queueUpdate = () => { if (!scheduled) { scheduled = true; requestAnimationFrame(updateSection); } };
+  window.addEventListener('scroll', queueUpdate, { passive: true });
+  window.addEventListener('resize', queueUpdate);
+  updateSection();
+</script>

@@ -10,8 +10,8 @@ const currentGroup = currentId ? groupOf(notes.find(note => note.id === currentI
 <aside class="note-sidebar simple-sidebar" aria-label="笔记分类" data-current-group={currentGroup}>
   <div class="category-heading">笔记分类</div>
   <nav class="category-nav" aria-label="笔记分类导航">
-    <a data-group="" href={url('notes/')}>全部笔记</a>
-    {groups.map(group => <a data-group={group} href={url(`notes/?category=${encodeURIComponent(group)}`)}>{group}</a>)}
+    <a data-group="" href={url('notes/')}><span>✧　全部笔记</span><small>{notes.length}</small></a>
+    {groups.map(group => <a data-group={group} href={url(`notes/?category=${encodeURIComponent(group)}`)}><span>◇　{group}</span><small>{notes.filter(note => groupOf(note) === group).length}</small></a>)}
   </nav>
 </aside>
 <script>

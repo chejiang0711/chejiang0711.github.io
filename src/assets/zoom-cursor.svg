@@ -1,0 +1,8 @@
+<!-- 32px 固定画布保证光标兼容性，圆心作为点击热点。 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <path d="m22 22 7 7" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+  <path d="m22 22 7 7" stroke="#806092" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="13" cy="13" r="11" fill="#f0e4f8" stroke="#fff" stroke-width="3"/>
+  <circle cx="13" cy="13" r="10" fill="none" stroke="#9573ab" stroke-width="1.5"/>
+  <path d="M13 8v10M8 13h10" stroke="#745085" stroke-width="2" stroke-linecap="round"/>
+</svg>

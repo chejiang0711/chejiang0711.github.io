@@ -9,9 +9,9 @@ const notes = await getNotes();
     <div class="hero-image"><img src={url('images/hero.jpg')} alt="银色长发的魔女，戴着宽檐帽，沐浴在柔和的粉紫色光线中" fetchpriority="high" width="1176" height="666" /><span class="image-caption">A LITTLE MAGIC, A LITTLE CODE.</span></div>
     <div class="hero-copy"><div class="eyebrow"><span class="status-dot"></span> 澈酱的游戏开发日志</div><h1>魔法尚未<span>编译<span class="title-star">✧</span></span></h1><p>正在把想象中的世界，<br />一行一行写出来。</p><div class="hero-actions"><a class="button" href={url('notes/')}>翻开魔法手记 <span>↗</span></a><a class="text-link" href={url('about/')}>认识澈酱 →</a></div><div class="hero-tags">UNITY <i>✦</i> CODE <i>✦</i> LITTLE WORLDS</div></div>
   </section>
-  <div class="wrap intro-strip"><span>✧ 每一次报错，都是新魔法的开场。</span><span>记录 · 实验 · 构筑</span></div>
+  <!-- 封面直接衔接笔记列表，个人介绍通过导航中的关于页查看。 -->
   <section class="wrap journal"><div class="section-heading"><div><div class="eyebrow">THE LATEST CHAPTERS</div><h2>最近的魔法手记<span> / NOTES</span></h2></div><a class="text-link" href={url('notes/')}>全部笔记 ↗</a></div>
-    <div class="home-grid"><div class="cards">{notes.slice(0, 3).map((note, index) => <NoteCard note={note} index={index} />)}</div><aside class="profile"><div class="avatar">✧</div><h3>你好，我是澈酱<span>。</span></h3><p>喜欢伊蕾娜，也喜欢用代码<br />创造可以探索的小世界。</p><div class="profile-line"></div><div class="eyebrow">这本手记里</div><a href={url('notes/?category=Unity 基础')}>◇ Unity 开发 <span>↗</span></a><a href={url('notes/?category=开发随记')}>✧ 开发随记 <span>↗</span></a><a href={url('notes/?category=踩坑记录')}>⌘ 踩坑与成长 <span>↗</span></a><small>旅途还很长，慢慢写，慢慢来。</small></aside></div>
+    <div class="home-grid"><div class="cards">{notes.slice(0, 3).map((note, index) => <NoteCard note={note} index={index} />)}</div></div>
   </section>
   <section class="wrap closing"><span>✦</span><div><h2>世界还在构筑，故事正在发生。</h2><p>这里收藏每一个小小的发现，也记录那些尚未成功的尝试。</p></div><span>✧</span></section>
 </Base>
