@@ -1,0 +1,14 @@
+---
+import { url } from '../lib/notes';
+const { nodes, currentId } = Astro.props;
+---
+<ul class="folder-branches">
+  {nodes.map(node => <li>
+    <details class="folder-node" data-folder-path={JSON.stringify(node.path)} open>
+      <summary><span aria-hidden="true">▱</span><span>{node.name}</span><small>{node.count}</small></summary>
+      <a class="folder-overview" data-folder-link={JSON.stringify(node.path)} href={url(`notes/?folder=${encodeURIComponent(JSON.stringify(node.path))}`)}>浏览此分组 →</a>
+      {node.children.length > 0 && <Astro.self nodes={node.children} currentId={currentId} />}
+      <ul class="folder-articles">{node.notes.map(note => <li><a href={url(`notes/${note.id}/`)} aria-current={currentId === note.id ? 'page' : undefined}><span aria-hidden="true">≡</span>{note.data.title}</a></li>)}</ul>
+    </details>
+  </li>)}
+</ul>

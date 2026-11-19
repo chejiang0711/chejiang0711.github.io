@@ -1,0 +1,25 @@
+---
+import '../styles/global.css';
+import { url } from '../lib/notes';
+const { title = '魔法尚未编译', description = '澈酱的游戏开发日志。正在把想象中的世界，一行一行写出来。' } = Astro.props;
+const nav = [['', '首页'], ['notes/', '全部笔记'], ['about/', '关于澈酱']];
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} /><meta name="theme-color" content="#f5f1f8" />
+    <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+    <title>{title === '魔法尚未编译' ? title + ' · 澈酱的游戏开发日志' : title + ' · 魔法尚未编译'}</title>
+  </head>
+  <body>
+    <a class="skip" href="#main">跳到正文</a>
+    <header class="header"><div class="header-inner">
+      <a class="brand" href={url()}><span class="brand-icon">✧</span><span>魔法尚未编译<small>CHEJIANG’S DEV JOURNAL</small></span></a>
+      <nav aria-label="主导航">{nav.map(([path, label]) => <a href={url(path)} aria-current={Astro.url.pathname === url(path) ? 'page' : undefined}>{label}</a>)}</nav>
+      <a class="github" href="https://github.com/chejiang0711" target="_blank" rel="noopener noreferrer">GitHub <span>↗</span></a>
+    </div></header>
+    <main id="main"><slot /></main>
+    <footer><a class="footer-brand" href={url()}>✧ 魔法尚未编译</a><span>把灵感写成代码，把旅途做成游戏。</span><small>© {new Date().getFullYear()} 澈酱 · Built with Astro</small></footer>
+  </body>
+</html>

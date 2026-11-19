@@ -1,0 +1,25 @@
+---
+import { getNotes, url } from '../lib/notes';
+const { currentId } = Astro.props;
+const notes = await getNotes();
+// 只显示笔记的顶层分组，把 Obsidian 子目录合并到所属大类。
+const groupOf = note => note.data.folder?.[0] || note.data.category;
+const groups = [...new Set(notes.map(groupOf))];
+const currentGroup = currentId ? groupOf(notes.find(note => note.id === currentId)) : '';
+---
+<aside class="note-sidebar simple-sidebar" aria-label="笔记分类" data-current-group={currentGroup}>
+  <div class="category-heading">笔记分类</div>
+  <nav class="category-nav" aria-label="笔记分类导航">
+    <a data-group="" href={url('notes/')}>全部笔记</a>
+    {groups.map(group => <a data-group={group} href={url(`notes/?category=${encodeURIComponent(group)}`)}>{group}</a>)}
+  </nav>
+</aside>
+<script>
+  // 列表按 URL 高亮，文章页按所属大类高亮。
+  const sidebar = document.querySelector<HTMLElement>('.simple-sidebar');
+  const params = new URLSearchParams(location.search);
+  let selected = sidebar?.dataset.currentGroup || params.get('category') || '';
+  document.querySelectorAll<HTMLAnchorElement>('[data-group]').forEach(link => {
+    if (link.dataset.group === selected) link.setAttribute('aria-current', 'page');
+  });
+</script>
