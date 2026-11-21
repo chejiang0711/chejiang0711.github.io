@@ -1,16 +1,107 @@
+<!-- 阅读工具仅在文章页加载；装饰进度不反复打断屏幕阅读器。 -->
+<div class="reading-progress" aria-hidden="true" hidden><span></span></div>
+<button class="magic-top" type="button" aria-label="返回文章顶部" title="返回文章顶部" hidden>
+  <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="reading-ring-track" cx="24" cy="24" r="21"/><circle class="reading-ring" cx="24" cy="24" r="21" pathLength="100"/><path class="reading-star" d="M24 12 27.5 20.5 36 24 27.5 27.5 24 36 20.5 27.5 12 24 20.5 20.5Z"/></svg>
+  <span class="reading-percent" aria-hidden="true">0%</span>
+</button>
 <!-- 原生对话框提供焦点约束与 Escape 关闭，原图仍可独立打开。 -->
 <dialog class="image-viewer" aria-label="笔记图片预览">
   <div class="viewer-toolbar"><span id="viewer-caption">图片预览</span><div><button type="button" id="image-zoom">原始尺寸</button><a id="image-original" target="_blank" rel="noopener noreferrer">打开原图 ↗</a><button type="button" id="image-close" aria-label="关闭图片预览">关闭 ×</button></div></div>
   <div class="viewer-canvas"><img id="viewer-image" alt="" /></div>
 </dialog>
 <script>
+  // 以正文进入阅读区到正文末尾进入视口为进度范围，图片加载后重新测量。
+  const readingArticle = document.querySelector<HTMLElement>('.prose');
+  const readingBar = document.querySelector<HTMLElement>('.reading-progress')!;
+  const readingFill = readingBar.querySelector<HTMLElement>('span')!;
+  const topButton = document.querySelector<HTMLButtonElement>('.magic-top')!;
+  const readingRing = topButton.querySelector<SVGCircleElement>('.reading-ring')!;
+  const readingPercent = topButton.querySelector<HTMLElement>('.reading-percent')!;
+  let readingFrame = false;
+  const updateReading = () => {
+    readingFrame = false;
+    if (!readingArticle) return;
+    const bounds = readingArticle.getBoundingClientRect();
+    const start = bounds.top + window.scrollY - 100;
+    const finish = bounds.bottom + window.scrollY - window.innerHeight;
+    const progress = finish <= start
+      ? (bounds.bottom <= window.innerHeight ? 1 : 0)
+      : Math.max(0, Math.min(1, (window.scrollY - start) / (finish - start)));
+    readingFill.style.transform = 'scaleX(' + progress + ')';
+    readingRing.style.strokeDashoffset = String(100 - progress * 100);
+    readingPercent.textContent = Math.round(progress * 100) + '%';
+    topButton.hidden = window.scrollY < 240;
+    readingBar.hidden = false;
+  };
+  const queueReading = () => {
+    if (!readingFrame) { readingFrame = true; requestAnimationFrame(updateReading); }
+  };
+  window.addEventListener('scroll', queueReading, { passive: true });
+  window.addEventListener('resize', queueReading);
+  window.addEventListener('load', queueReading);
+  if (readingArticle) new ResizeObserver(queueReading).observe(readingArticle);
+  topButton.addEventListener('click', () => {
+    // 先将焦点交回标题，避免按钮隐藏后键盘焦点丢失；尊重减少动态设置。
+    const heading = document.querySelector<HTMLElement>('.article-header h1');
+    if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+    window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+  });
+  updateReading();
+  // 增强现有代码块而不改动高亮内容；复制只读取 code，避免把工具栏文字带入。
+  document.querySelectorAll<HTMLPreElement>('.prose pre').forEach(pre => {
+    const code = pre.querySelector('code');
+    if (!code) return;
+    const frame = document.createElement('div');
+    frame.className = 'code-frame';
+    const toolbar = document.createElement('div');
+    toolbar.className = 'code-toolbar';
+    const label = document.createElement('span');
+    // 构建时注入真实语言，不通过代码内容猜测。
+    label.textContent = pre.dataset.language || '代码片段';
+    const copy = document.createElement('button');
+    copy.type = 'button';
+    copy.textContent = '复制代码';
+    copy.setAttribute('aria-label', '复制此代码片段');
+    const status = document.createElement('span');
+    status.className = 'code-copy-status';
+    status.setAttribute('role', 'status');
+    toolbar.append(label, status, copy);
+    pre.before(frame);
+    frame.append(toolbar, pre);
+    // 横向滚动区域可通过键盘访问，长代码保持原来的缩进与换行。
+    pre.tabIndex = 0;
+    pre.setAttribute('aria-label', '代码片段，可横向滚动');
+    let resetTimer: ReturnType<typeof setTimeout>;
+    copy.addEventListener('click', async () => {
+      clearTimeout(resetTimer);
+      try {
+        await navigator.clipboard.writeText(code.textContent || '');
+        status.textContent = '已复制';
+        copy.textContent = '再复制一次';
+      } catch {
+        status.textContent = '复制失败，请选中代码手动复制';
+      }
+      resetTimer = setTimeout(() => {
+        status.textContent = '';
+        copy.textContent = '复制代码';
+      }, 3000);
+    });
+  });
+  // 手机目录默认折叠，跨越桌面断点时重新同步，避免桌面正文旁出现空目录。
+  const tocDisclosure = document.querySelector<HTMLDetailsElement>('.toc-disclosure');
+  const compactReader = matchMedia('(max-width: 700px)');
+  const syncToc = () => { if (tocDisclosure) tocDisclosure.open = !compactReader.matches; };
+  compactReader.addEventListener('change', syncToc);
+  syncToc();
   const dialog = document.querySelector<HTMLDialogElement>('.image-viewer')!;
   const preview = document.querySelector<HTMLImageElement>('#viewer-image')!;
   const zoom = document.querySelector<HTMLButtonElement>('#image-zoom')!;
   let trigger: HTMLElement | null = null;
   let previousOverflow = '';
   // 将正文截图变为可键盘操作的按钮，不改变被链接图片的原有行为。
-  document.querySelectorAll<HTMLImageElement>('.prose img').forEach(img => {
+  document.querySelectorAll<HTMLImageElement>('.prose img').forEach((img, index) => {
+    img.loading = 'lazy'; img.decoding = 'async';
+    if (!img.alt || /^Pasted image|^笔记截图$/.test(img.alt)) img.alt = '笔记截图 ' + (index + 1);
     if (img.closest('a')) return;
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'image-trigger';

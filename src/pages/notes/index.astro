@@ -2,12 +2,16 @@
 import Base from '../../layouts/Base.astro';
 import NoteSidebar from '../../components/NoteSidebar.astro';
 import NoteCard from '../../components/NoteCard.astro';
-import { getNotes } from '../../lib/notes';
+import { getNotes, url } from '../../lib/notes';
 const notes = await getNotes();
 ---
-<Base title="全部笔记"><div class="wrap notebook-layout"><NoteSidebar /><section class="page-section notebook-content"><div class="eyebrow">THE SPELLBOOK</div><p id="folder-caption" class="folder-caption" hidden></p><h1 class="page-title">魔法手记<span>✧</span></h1><p class="lead">把一路上的灵感、尝试与收获，写在这里。</p>
-  <div class="filters"><label class="search"><span>搜索笔记</span><input type="search" id="search" placeholder="搜索标题、摘要或标签…" /></label></div>
-  <p class="result-count" id="count" aria-live="polite">共 {notes.length} 篇笔记</p><div class="cards notes-grid">{notes.map((note, index) => <NoteCard note={note} index={index} />)}</div><p id="empty" class="empty" hidden>暂时没有找到这道魔法，试试其他关键词。</p>
+<Base title="全部笔记"><div class="wrap notebook-layout"><NoteSidebar /><section class="page-section notebook-content spellbook-page"><!-- 手记书架封面沿用首页插画，以渐变衔接文字，搜索保留原过滤逻辑。 -->
+<header class="spellbook-cover">
+  <img class="spellbook-art" src={url('images/hero.jpg')} alt="" aria-hidden="true" />
+  <div class="spellbook-cover-copy"><div class="eyebrow">澈酱的灵感收藏室</div><p id="folder-caption" class="folder-caption" hidden></p><h1 class="page-title">魔法手记<span aria-hidden="true">✧</span></h1><p class="lead">每一次尝试，都是一道新的魔法。<br />把代码、灵感与成长，收藏在旅途里。</p><div class="spellbook-seal"><span aria-hidden="true">✦</span> 已收藏 {notes.length} 篇手记</div></div>
+</header>
+<div class="spellbook-tools"><div><span class="eyebrow">翻开新的一页</span><h2>手记书架</h2></div><div class="filters"><label class="search"><span>寻找一道魔法</span><input type="search" id="search" placeholder="搜索标题、摘要或标签…" /></label><button type="button" class="clear-search" id="clear-search" hidden>清空搜索 ×</button></div></div>  <p class="result-count" id="count" aria-live="polite">共 {notes.length} 篇笔记</p><div class="cards notes-grid">{notes.map((note, index) => <NoteCard note={note} index={index} />)}</div><!-- 无内容与过滤无结果分别说明，避免空书架误导访客反复搜索。 -->
+<section id="empty" class="shelf-empty" hidden={notes.length > 0}><span aria-hidden="true">✧</span><h2 id="empty-title">{notes.length ? '没有找到这道魔法' : '书架已经准备好'}</h2><p id="empty-description">{notes.length ? '试试其他关键词，或返回全部笔记。' : '这里暂时还没有笔记。下一次灵感，会成为第一本收藏。'}</p><a href={url('notes/')} hidden={notes.length === 0}>查看全部笔记 ↗</a></section>
 </section></div></Base>
 <script>
   // 分类和搜索共同过滤，URL 保存分类以支持首页直达。
@@ -23,11 +27,15 @@ const notes = await getNotes();
   caption.textContent = folder.join(' / ');
   function filter() {
     const keyword = input.value.trim().toLowerCase();
+    // 空书架始终解释内容状态；有笔记时显示筛选结果提示。
+    if (cards.length) { document.querySelector('#empty-title')!.textContent = '没有找到这道魔法'; }
+    document.querySelector<HTMLButtonElement>('#clear-search')!.hidden = !input.value;
     let count = 0;
     cards.forEach(card => { card.hidden = !(category === '全部' || card.dataset.category === category || JSON.parse(card.dataset.folder || '[]')[0] === category) || !card.dataset.search!.includes(keyword) || !folder.every((part, i) => JSON.parse(card.dataset.folder || '[]')[i] === part); if (!card.hidden) count++; });
     document.querySelector('#count')!.textContent = `共 ${count} 篇笔记`;
     (document.querySelector('#empty') as HTMLElement).hidden = count > 0;
   }
+  document.querySelector('#clear-search')!.addEventListener('click', () => { input.value = ''; filter(); input.focus(); });
   input.addEventListener('input', filter);
   filter();
 </script>

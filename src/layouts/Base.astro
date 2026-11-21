@@ -1,8 +1,10 @@
 ---
 import '../styles/global.css';
+import EntranceMotion from '../components/EntranceMotion.astro';
 import { url } from '../lib/notes';
 const { title = '魔法尚未编译', description = '澈酱的游戏开发日志。正在把想象中的世界，一行一行写出来。' } = Astro.props;
-const nav = [['', '首页'], ['notes/', '全部笔记'], ['about/', '关于澈酱']];
+// 独立归档入口按时间串起笔记，与分类书架互补。
+const nav = [['', '首页'], ['notes/', '全部笔记'], ['archive/', '旅途归档'], ['about/', '关于澈酱']];
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -11,15 +13,57 @@ const nav = [['', '首页'], ['notes/', '全部笔记'], ['about/', '关于澈�
     <meta name="description" content={description} /><meta name="theme-color" content="#f5f1f8" />
     <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
     <title>{title === '魔法尚未编译' ? title + ' · 澈酱的游戏开发日志' : title + ' · 魔法尚未编译'}</title>
+    <!-- 首次绘制前读取偏好，避免夜间主题进入页面时闪白；禁用存储也可使用。 -->
+    <script is:inline>
+      (() => {
+        const system = matchMedia('(prefers-color-scheme: dark)');
+        let preference = null;
+        try { preference = localStorage.getItem('chejiang-theme'); } catch {}
+        const apply = dark => {
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#191520' : '#f5f1f8');
+          const button = document.querySelector('.theme-toggle');
+          if (button) {
+            button.setAttribute('aria-label', dark ? '切换到日间主题' : '切换到夜间主题');
+            button.setAttribute('title', dark ? '切换到日间主题' : '切换到夜间主题');
+            button.setAttribute('aria-pressed', String(dark));
+          }
+        };
+        apply(preference === 'dark' || (preference !== 'light' && system.matches));
+        document.addEventListener('DOMContentLoaded', () => {
+          const button = document.querySelector('.theme-toggle');
+          apply(document.documentElement.dataset.theme === 'dark');
+          button.hidden = false;
+          button.addEventListener('click', () => {
+            const dark = document.documentElement.dataset.theme !== 'dark';
+            preference = dark ? 'dark' : 'light';
+            try { localStorage.setItem('chejiang-theme', preference); } catch {}
+            apply(dark);
+          });
+        }, { once: true });
+        // 仅未手动选择时随系统变化，跨标签页修改也同步。
+        system.addEventListener('change', () => { if (preference !== 'dark' && preference !== 'light') apply(system.matches); });
+        window.addEventListener('storage', event => {
+          if (event.key !== 'chejiang-theme' && event.key !== null) return;
+          preference = event.newValue;
+          apply(preference === 'dark' || (preference !== 'light' && system.matches));
+        });
+      })();
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">跳到正文</a>
     <header class="header"><div class="header-inner">
       <a class="brand" href={url()}><span class="brand-icon">✧</span><span>魔法尚未编译<small>CHEJIANG’S DEV JOURNAL</small></span></a>
-      <nav aria-label="主导航">{nav.map(([path, label]) => <a href={url(path)} aria-current={Astro.url.pathname === url(path) ? 'page' : undefined}>{label}</a>)}</nav>
+      <!-- 给主导航单独样式，避免影响分类和章节目录。 --><nav class="main-nav" aria-label="主导航">{nav.map(([path, label]) => <a href={url(path)} aria-current={Astro.url.pathname === url(path) ? 'page' : undefined}>{label}</a>)}</nav>
+      <!-- 日月图标作为装饰，按钮名称随当前主题更新。 -->
+      <button class="theme-toggle" type="button" hidden aria-label="切换到夜间主题" aria-pressed="false"><!-- SVG 日月与滑块分层，图案不影响按钮的无障碍名称。 -->
+<span class="theme-track" aria-hidden="true"><span class="theme-stars"></span><span class="theme-thumb"></span><svg class="theme-day-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5"/></svg><svg class="theme-night-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M19.4 14.5A8 8 0 0 1 9.5 4.6a8 8 0 1 0 9.9 9.9Z"/></svg></span></button>
       <a class="github" href="https://github.com/chejiang0711" target="_blank" rel="noopener noreferrer">GitHub <span>↗</span></a>
     </div></header>
     <main id="main"><slot /></main>
-    <footer><a class="footer-brand" href={url()}>✧ 魔法尚未编译</a><span>把灵感写成代码，把旅途做成游戏。</span><small>© {new Date().getFullYear()} 澈酱 · Built with Astro</small></footer>
+    <!-- 页脚提供第二组站内入口，不继承顶部导航的布局。 --><footer class="site-footer"><a class="footer-brand" href={url()}>✧ 魔法尚未编译</a><span>把灵感写成代码，把旅途做成游戏。</span><nav class="footer-nav" aria-label="页脚导航"><a href={url('notes/')}>手记</a><a href={url('archive/')}>归档</a><a href={url('about/')}>关于</a></nav><small>© {new Date().getFullYear()} 澈酱 · Built with Astro <span class="footer-star" aria-hidden="true">✧</span></small></footer>
+    <!-- 入场动画集中管理，不干扰正文阅读与首页持续飞舞效果。 -->
+    <EntranceMotion />
   </body>
 </html>

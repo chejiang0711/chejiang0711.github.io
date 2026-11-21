@@ -1,0 +1,42 @@
+<script>
+  // 内容默认可见，仅在首次进入视野时播放；脚本失效也不会留下空白区。
+  const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+  const targets = Array.from(document.querySelectorAll<HTMLElement>(
+    '.empty-journal, .shelf-empty, .latest-note, .recent-note, .hero-copy, .section-heading, .note-card, .spellbook-cover, .spellbook-tools, .journey-heading, .journey-year > h2, .journey-entry, .article-header, .next-chapter-heading, .chapter-link, .about-panel, .traveler-passport, .traveler-letter, .traveler-interests, .traveler-departure'
+  ));
+  const played = new WeakSet<Element>();
+  const active = new Map<HTMLElement, Animation>();
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const element = entry.target as HTMLElement;
+        observer.unobserve(element);
+        if (played.has(element)) continue;
+        played.add(element);
+        if (motionPreference.matches || element.contains(document.activeElement)) continue;
+        // 少量错峰，不累积到整页；独立 translate 不覆盖卡片已有的悬停 transform。
+        const siblings = Array.from(element.parentElement?.children || []);
+        const delay = element.matches('.note-card, .chapter-link')
+          ? Math.max(0, siblings.indexOf(element) % 3) * 65 : 0;
+        const animation = element.animate(
+          [{ opacity: 0.15, translate: '0 14px' }, { opacity: 1, translate: '0 0' }],
+          { duration: 520, delay, easing: 'cubic-bezier(.2,.7,.25,1)', fill: 'backwards' }
+        );
+        active.set(element, animation);
+        animation.onfinish = () => active.delete(element);
+        animation.oncancel = () => active.delete(element);
+      }
+    }, { threshold: 0.05 });
+    targets.forEach(element => observer.observe(element));
+    // 键盘聚焦时立即显示；用户切换减弱动态偏好后，立即结束进行中的动画。
+    document.addEventListener('focusin', event => {
+      for (const [element, animation] of active) {
+        if (event.target instanceof Node && element.contains(event.target)) animation.cancel();
+      }
+    });
+    motionPreference.addEventListener('change', () => {
+      if (motionPreference.matches) active.forEach(animation => animation.cancel());
+    });
+  }
+</script>

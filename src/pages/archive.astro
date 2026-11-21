@@ -1,0 +1,44 @@
+---
+import EmptyJournal from '../components/EmptyJournal.astro';
+import Base from '../layouts/Base.astro';
+import { getNotes, url } from '../lib/notes';
+const notes = await getNotes();
+// 直接使用已过滤草稿、按日期倒序的笔记，归档随新文章自动更新。
+const years = [...new Set(notes.map(note => note.data.date.slice(0, 4)))];
+const monthsFor = (year: string) => [...new Set(notes.filter(note => note.data.date.startsWith(year + '-')).map(note => note.data.date.slice(0, 7)))];
+---
+<Base title="旅途归档" description="沿着时间的足迹，翻阅澈酱的游戏开发手记。">
+  <div class="wrap journey-page">
+    <header class="journey-heading">
+      <div class="eyebrow">沿着星光，回望来时的路</div>
+      <h1>旅途归档 <span aria-hidden="true">✧</span></h1>
+      <p>那些写过的代码、遇见的难题，<br />都成了旅途中闪光的坐标。</p>
+      <div class="journey-stats"><span><strong>{notes.length}</strong> 篇手记</span><span><strong>{years.length}</strong> 个年份</span><span>旅途仍在继续 <i aria-hidden="true">✦</i></span></div>
+      <div class="journey-compass" aria-hidden="true"><span>✧</span></div>
+    </header>
+    <!-- 原生锚点可直接定位年份，无脚本时也能正常浏览。 -->
+    {years.length > 0 ? <div class="journey-layout">
+      <aside class="journey-index"><span class="eyebrow">时间坐标</span><nav aria-label="归档年份">{years.map(year => <a href={'#year-' + year}>{year}<span>↘</span></a>)}</nav><p>一页一页，<br />慢慢写成自己的世界。</p></aside>
+      <div class="journey-route">
+        <div class="journey-start"><span aria-hidden="true">✦</span> 最近的足迹</div>
+        {years.map(year => <section class="journey-year" id={'year-' + year} aria-labelledby={'title-' + year}>
+          <h2 id={'title-' + year}>{year}<span>年的旅途</span></h2>
+          {monthsFor(year).map(month => {
+            const entries = notes.filter(note => note.data.date.startsWith(month + '-'));
+            return <section class="journey-month" aria-label={month}>
+              <div class="journey-month-label"><h3>{Number(month.slice(5))} 月</h3><span>{entries.length} 篇手记</span></div>
+              <ol class="journey-entries">{entries.map(note => <li>
+                <span class="journey-node" aria-hidden="true">✧</span>
+                <a class="journey-entry" href={url('notes/' + note.id + '/')}>
+                  <div class="journey-entry-meta"><time datetime={note.data.date}>{note.data.dateKind === '导入日期' && '导入 · '}{note.data.date.slice(5).replace('-', ' / ')}</time><span>{note.data.category}</span>{note.data.sample && <small>示例笔记</small>}</div>
+                  <h4>{note.data.title}</h4><p>{note.data.description}</p><span class="journey-read">翻阅这一页 <span aria-hidden="true">↗</span></span>
+                </a>
+              </li>)}</ol>
+            </section>;
+          })}
+        </section>)}
+        <div class="journey-finish"><span aria-hidden="true">◇</span><p>故事从这里开始，下一站仍值得期待。</p><a href={url('notes/')}>回到手记书架 ↗</a></div>
+      </div>
+    </div> : <EmptyJournal kind="route" title="还没有足迹，但方向已经确定。" description="从第一篇手记开始，沿途的学习与发现会按年月汇成一条路线。" />}
+  </div>
+</Base>

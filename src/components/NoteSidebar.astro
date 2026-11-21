@@ -1,17 +1,18 @@
 ---
+import { categoryStyle } from '../lib/categories';
 import { getNotes, url } from '../lib/notes';
 const { currentId } = Astro.props;
 const notes = await getNotes();
 // 只显示笔记的顶层分组，把 Obsidian 子目录合并到所属大类。
-const groupOf = note => note.data.folder?.[0] || note.data.category;
+const groupOf = note => note?.data.folder?.[0] || note?.data.category || '';
 const groups = [...new Set(notes.map(groupOf))];
 const currentGroup = currentId ? groupOf(notes.find(note => note.id === currentId)) : '';
 ---
 <aside class="note-sidebar simple-sidebar" aria-label="笔记分类" data-current-group={currentGroup}>
   <div class="category-heading">笔记分类</div>
   <nav class="category-nav" aria-label="笔记分类导航">
-    <a data-group="" href={url('notes/')}><span>✧　全部笔记</span><small>{notes.length}</small></a>
-    {groups.map(group => <a data-group={group} href={url(`notes/?category=${encodeURIComponent(group)}`)}><span>◇　{group}</span><small>{notes.filter(note => groupOf(note) === group).length}</small></a>)}
+    <a data-group="" href={url('notes/')}><span class="category-label"><span class="category-icon" aria-hidden="true">✧</span>全部笔记</span><small>{notes.length}</small></a>
+    {groups.map(group => <a data-group={group} style={`--category-color:${categoryStyle(group).color}`} href={url(`notes/?category=${encodeURIComponent(group)}`)}><span class="category-label"><span class="category-icon" aria-hidden="true">{categoryStyle(group).icon}</span>{group}</span><small>{notes.filter(note => groupOf(note) === group).length}</small></a>)}
   </nav>
 </aside>
 <script>

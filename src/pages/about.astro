@@ -1,4 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getNotes, url } from '../lib/notes';
+const notes = await getNotes();
+// 只展示已知兴趣与真实笔记数量，不虚构技能等级、履历或项目经历。
+const interests = [
+  { icon: '◇', title: 'Unity 游戏开发', text: '把场景、组件与脚本连接起来，让想象中的世界慢慢成形。' },
+  { icon: '⌘', title: 'UI 与交互', text: '记录 UGUI 与事件监听相关的学习笔记，理解每一次交互如何发生。' },
+  { icon: '✧', title: '开发手记', text: '留下尝试、问题与排查过程，为下一次出发保存线索。' },
+];
 ---
-<Base title="关于澈酱"><section class="wrap page-section about"><div class="eyebrow">THE TRAVELER BEHIND THE CODE</div><h1 class="page-title">你好，我是澈酱<span>✧</span></h1><p class="lead">喜欢《魔女之旅》中的伊蕾娜，也在记录自己的游戏开发旅程。</p><div class="about-panel"><span class="about-star">✧</span><h2>魔法尚未编译，旅途已经开始。</h2><p>这里是我的 Unity 游戏开发日志，用来存放学习笔记、开发过程和问题排查记录。</p><p>把灵感写成代码，把旅途做成游戏。希望每次回看这些文字，都能找到继续前进的线索。</p><a class="button" href="https://github.com/chejiang0711" target="_blank" rel="noopener noreferrer">在 GitHub 找到我 ↗</a></div></section></Base>
+<Base title="关于澈酱" description="澈酱的旅行者档案：喜欢伊蕾娜，记录 Unity 游戏开发的学习旅途。">
+  <section class="wrap traveler-page">
+    <div class="traveler-kicker"><span class="eyebrow">关于这本手记的主人</span><span aria-hidden="true">✧ — ✧</span></div>
+    <!-- 旅行证件式明信片复用封面插画，人物图不作为真人照片描述。 -->
+    <header class="traveler-passport">
+      <div class="traveler-picture"><img src={url('images/hero.jpg')} alt="《魔女之旅》伊蕾娜主题插画" width="1176" height="666" /><span>旅途中喜欢的一帧</span></div>
+      <div class="traveler-intro"><div class="traveler-status"><span aria-hidden="true"></span> 游戏开发旅途中</div><h1>你好，我是<span>澈酱。</span></h1><p>喜欢《魔女之旅》中的伊蕾娜，<br />也想把自己的想象，写成可以探索的小世界。</p><div class="traveler-tags"><span>Unity</span><span>C# 学习</span><span>伊蕾娜</span><span>开发记录</span></div><a class="traveler-github" href="https://github.com/chejiang0711" target="_blank" rel="noopener noreferrer">在 GitHub 找到我 <span aria-hidden="true">↗</span></a><span class="traveler-stamp" aria-hidden="true">✧<small>旅途进行中</small></span></div>
+    </header>
+    <div class="traveler-body">
+      <section class="traveler-letter"><span class="eyebrow">写在旅途的扉页</span><h2>魔法尚未编译，<br />旅途已经开始。</h2><p>这里是我的 Unity 游戏开发日志，用来存放学习笔记、开发过程和问题排查记录。</p><p>把灵感写成代码，把旅途做成游戏。希望每次回看这些文字，都能找到继续前进的线索。</p><div class="traveler-signature"><span aria-hidden="true">✦</span> 澈酱 <small>慢慢写，慢慢来。</small></div></section>
+      <section class="traveler-interests" aria-labelledby="interests-title"><div class="eyebrow">随身携带的好奇心</div><h2 id="interests-title">正在探索的方向</h2>{interests.map(item => <div class="traveler-interest"><span aria-hidden="true">{item.icon}</span><div><h3>{item.title}</h3><p>{item.text}</p></div></div>)}</section>
+    </div>
+    <section class="traveler-departure" aria-label="继续探索博客"><div><span class="eyebrow">下一页，去哪里？</span><h2>已经留下 {notes.length} 篇手记</h2><p>有学习中的发现，也有留给未来的提醒。</p></div><div class="traveler-paths"><a href={url('notes/')}>翻开手记 <span aria-hidden="true">↗</span></a><a href={url('archive/')}>沿着旅途回看 <span aria-hidden="true">↗</span></a></div></section>
+  </section>
+</Base>

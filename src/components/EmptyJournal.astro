@@ -1,0 +1,8 @@
+---
+import { url } from '../lib/notes';
+const { title, description, kind = 'book' } = Astro.props;
+---
+<section class:list={['empty-journal', { 'empty-route': kind === 'route' }]} aria-label={title}>
+  <div class="empty-emblem" aria-hidden="true"><svg viewBox="0 0 120 100" fill="none"><path d="M60 31C45 18 25 21 13 27v54c15-7 32-6 47 3 15-9 32-10 47-3V27c-12-6-32-9-47 4Zm0 0v53" stroke="currentColor" stroke-width="1.5"/><path d="m25 40 23 2m-23 10 23 2m-23 10 16 1m34-23 20-2m-20 14 20-2" stroke="currentColor" stroke-opacity=".4" stroke-linecap="round"/><path d="m77 7 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="currentColor" fill-opacity=".3"/></svg></div>
+  <div class="empty-copy"><span class="eyebrow">{kind === 'route' ? '旅途 · 起点' : '故事，正要开始'}</span><h2>{title}</h2><p>{description}</p><div class="empty-actions"><a href={url('notes/')}>手记书架 <span aria-hidden="true">↗</span></a><a href={url(kind === 'route' ? 'about/' : 'archive/')}>{kind === 'route' ? '认识旅行者' : '旅途归档'} <span aria-hidden="true">↗</span></a></div></div>
+</section>
