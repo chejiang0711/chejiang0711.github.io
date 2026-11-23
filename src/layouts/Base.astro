@@ -3,8 +3,8 @@ import '../styles/global.css';
 import EntranceMotion from '../components/EntranceMotion.astro';
 import { url } from '../lib/notes';
 const { title = '魔法尚未编译', description = '澈酱的游戏开发日志。正在把想象中的世界，一行一行写出来。' } = Astro.props;
-// 独立归档入口按时间串起笔记，与分类书架互补。
-const nav = [['', '首页'], ['notes/', '全部笔记'], ['archive/', '旅途归档'], ['about/', '关于澈酱']];
+// 导航与页脚统一采用旅途主题名称，链接路径保持稳定。
+const nav = [['', '旅途起点'], ['notes/', '魔法手记'], ['archive/', '沿途足迹'], ['gallery/', '魔女剪影'], ['about/', '旅人澈酱']];
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -62,7 +62,7 @@ const nav = [['', '首页'], ['notes/', '全部笔记'], ['archive/', '旅途归
       <a class="github" href="https://github.com/chejiang0711" target="_blank" rel="noopener noreferrer">GitHub <span>↗</span></a>
     </div></header>
     <main id="main"><slot /></main>
-    <!-- 页脚提供第二组站内入口，不继承顶部导航的布局。 --><footer class="site-footer"><a class="footer-brand" href={url()}>✧ 魔法尚未编译</a><span>把灵感写成代码，把旅途做成游戏。</span><nav class="footer-nav" aria-label="页脚导航"><a href={url('notes/')}>手记</a><a href={url('archive/')}>归档</a><a href={url('about/')}>关于</a></nav><small>© {new Date().getFullYear()} 澈酱 · Built with Astro <span class="footer-star" aria-hidden="true">✧</span></small></footer>
+    <!-- 页脚提供第二组站内入口，不继承顶部导航的布局。 --><footer class="site-footer"><a class="footer-brand" href={url()}>✧ 魔法尚未编译</a><span>把灵感写成代码，把旅途做成游戏。</span><nav class="footer-nav" aria-label="页脚导航">{nav.slice(1).map(([path, label]) => <a href={url(path)}>{label}</a>)}</nav><small>© {new Date().getFullYear()} 澈酱 · Built with Astro <span class="footer-star" aria-hidden="true">✧</span></small></footer>
     <!-- 入场动画集中管理，不干扰正文阅读与首页持续飞舞效果。 -->
     <EntranceMotion />
   </body>

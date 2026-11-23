@@ -1,3 +1,4 @@
+import remarkNoteStructure from './src/lib/remark-note-structure.mjs';
 import remarkSoftBreaks from './src/lib/remark-soft-breaks.mjs';
 import { defineConfig } from 'astro/config';
 import { unified } from '@astrojs/markdown-remark';
@@ -8,5 +9,5 @@ export default defineConfig({
   base: repo && repo !== 'chejiang0711.github.io' ? `/${repo}` : '/',
   trailingSlash: 'always',
   // 与 Obsidian 的普通换行习惯保持一致，空行仍用于分段。
-  markdown: { processor: unified({ remarkPlugins: [remarkSoftBreaks] }), shikiConfig: { theme: 'github-dark', transformers: [{ pre(node) { node.properties['data-language'] = this.options.lang; } }] } },
+  markdown: { processor: unified({ remarkPlugins: [remarkSoftBreaks, remarkNoteStructure] }), shikiConfig: { theme: 'github-dark', transformers: [{ pre(node) { node.properties['data-language'] = this.options.lang; } }] } },
 });

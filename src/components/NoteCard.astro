@@ -1,12 +1,13 @@
 ---
 import { categoryStyle } from '../lib/categories';
 import { url } from '../lib/notes';
-const { note, index = 0 } = Astro.props;
+const { note } = Astro.props;
 ---
 <article class="note-card" style={`--category-color:${categoryStyle(note.data.folder?.[0] || note.data.category).color}`} data-note data-folder={JSON.stringify(note.data.folder?.length ? note.data.folder : [note.data.category])} data-category={note.data.category} data-search={`${note.data.title} ${note.data.description} ${note.data.tags.join(' ')} ${note.data.category} ${note.data.folder?.join(' ') || ''}`.toLowerCase()}>
-  <div class:list={['card-art', `art-${index % 3}`]} aria-hidden="true"><span class="art-symbol">{categoryStyle(note.data.folder?.[0] || note.data.category).icon}</span><span class="art-label">{note.data.category}</span><span class="art-number">0{index + 1}</span></div>
-  <div class="card-body"><div class="meta"><span>{note.data.category}</span><time title={note.data.dateKind || '笔记日期'} datetime={note.data.date}>{note.data.dateKind === '导入日期' && '导入 · '}{note.data.date.replaceAll('-', '.')}</time></div>
+  <!-- 分类仅用细色条和文字标识，移除右上角装饰图标。 -->
+  <div class="note-color-line" aria-hidden="true"></div>
+  <div class="card-body"><div class="meta"><span class="note-category-pill">{note.data.category}</span><time title={note.data.dateKind || '笔记日期'} datetime={note.data.date}>{note.data.dateKind === '导入日期' && '导入 · '}{note.data.date.replaceAll('-', '.')}</time></div>
   <h3><a href={url(`notes/${note.id}/`)}>{note.data.title}</a></h3><p>{note.data.description}</p>
-  <div class="card-bottom"><span>{note.data.sample ? '示例笔记' : note.data.tags.slice(0, 2).join(' / ')}</span><a aria-label={`阅读：${note.data.title}`} href={url(`notes/${note.id}/`)}>↗</a></div></div>
+  <div class="card-bottom"><span class="note-tagline">{note.data.sample ? '示例笔记' : note.data.tags.slice(0, 2).join(' / ')}</span><a aria-label={`阅读：${note.data.title}`} class="note-read-link" href={url(`notes/${note.id}/`)}>阅读全文 <span aria-hidden="true">↗</span></a></div></div>
 </article>
 

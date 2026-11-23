@@ -2,35 +2,46 @@
 import EmptyJournal from '../components/EmptyJournal.astro';
 import Base from '../layouts/Base.astro';
 import { getNotes, url } from '../lib/notes';
-const notes = await getNotes();
-// 直接使用已过滤草稿、按日期倒序的笔记，归档随新文章自动更新。
-const years = [...new Set(notes.map(note => note.data.date.slice(0, 4)))];
-const monthsFor = (year: string) => [...new Set(notes.filter(note => note.data.date.startsWith(year + '-')).map(note => note.data.date.slice(0, 7)))];
+import { archiveAddedAt, uploadDay } from '../lib/upload-history';
+const notes = (await getNotes()).map(note => {
+  const uploaded = archiveAddedAt(note.filePath || ('src/content/notes/' + note.id + '.md'));
+  return { ...note, uploaded, uploadDate: uploaded ? uploadDay(uploaded) : null };
+}).sort((a, b) => (b.uploaded ? Date.parse(b.uploaded) : Infinity) - (a.uploaded ? Date.parse(a.uploaded) : Infinity) || a.id.localeCompare(b.id));
+const yearOf = note => note.uploadDate?.slice(0, 4) || 'pending';
+const monthOf = note => note.uploadDate?.slice(0, 7) || 'pending';
+const years = [...new Set(notes.map(yearOf))];
+const monthsFor = (year: string) => [...new Set(notes.filter(note => yearOf(note) === year).map(monthOf))];
+
 ---
-<Base title="旅途归档" description="沿着时间的足迹，翻阅澈酱的游戏开发手记。">
+<!-- 页面标题与导航统一为沿途足迹，保留原有归档地址。 -->
+<Base title="沿途足迹" description="沿着时间的足迹，翻阅澈酱的游戏开发手记。">
   <div class="wrap journey-page">
     <header class="journey-heading">
       <div class="eyebrow">沿着星光，回望来时的路</div>
-      <h1>旅途归档 <span aria-hidden="true">✧</span></h1>
-      <p>那些写过的代码、遇见的难题，<br />都成了旅途中闪光的坐标。</p>
-      <div class="journey-stats"><span><strong>{notes.length}</strong> 篇手记</span><span><strong>{years.length}</strong> 个年份</span><span>旅途仍在继续 <i aria-hidden="true">✦</i></span></div>
+      <h1>沿途足迹 <span aria-hidden="true">✧</span></h1>
+      <p>按时间翻阅手记，<br />重访每一次探索。</p>
+      <div class="journey-stats"><span><strong>{notes.length}</strong> 篇手记</span><span><strong>{years.filter(year => year !== 'pending').length}</strong> 个年份</span><span>旅途仍在继续 <i aria-hidden="true">✦</i></span></div>
       <div class="journey-compass" aria-hidden="true"><span>✧</span></div>
     </header>
     <!-- 原生锚点可直接定位年份，无脚本时也能正常浏览。 -->
     {years.length > 0 ? <div class="journey-layout">
-      <aside class="journey-index"><span class="eyebrow">时间坐标</span><nav aria-label="归档年份">{years.map(year => <a href={'#year-' + year}>{year}<span>↘</span></a>)}</nav><p>一页一页，<br />慢慢写成自己的世界。</p></aside>
+      <aside class="journey-index"><span class="eyebrow">时间坐标</span><nav aria-label="归档年份">{years.map(year => <a href={'#year-' + year}>{year === 'pending' ? '待上传' : year}<span>↘</span></a>)}</nav><p>一页一页，<br />慢慢写成自己的世界。</p></aside>
       <div class="journey-route">
+        <!-- 排序与足迹标题共用一行，保留标题文本节点供顺序切换更新。 -->
+        <div class="journey-toolbar">
         <div class="journey-start"><span aria-hidden="true">✦</span> 最近的足迹</div>
-        {years.map(year => <section class="journey-year" id={'year-' + year} aria-labelledby={'title-' + year}>
-          <h2 id={'title-' + year}>{year}<span>年的旅途</span></h2>
+          <div class="archive-sort"><select id="archive-order" aria-label="归档排列顺序"><option value="desc">最新添加在前</option><option value="asc">最早添加在前</option></select></div>
+        </div>
+        {years.map(year => <section class="journey-year" data-archive-year={year} id={'year-' + year} aria-labelledby={'title-' + year}>
+          <h2 id={'title-' + year}>{year === 'pending' ? '待上传' : year}<span>{year === 'pending' ? '尚无首次提交记录' : '年的旅途'}</span></h2>
           {monthsFor(year).map(month => {
-            const entries = notes.filter(note => note.data.date.startsWith(month + '-'));
-            return <section class="journey-month" aria-label={month}>
-              <div class="journey-month-label"><h3>{Number(month.slice(5))} 月</h3><span>{entries.length} 篇手记</span></div>
+            const entries = notes.filter(note => monthOf(note) === month);
+            return <section class="journey-month" data-archive-month={month} aria-label={month}>
+              <div class="journey-month-label"><h3>{month === 'pending' ? '本地手记' : Number(month.slice(5)) + ' 月'}</h3><span>{entries.length} 篇手记</span></div>
               <ol class="journey-entries">{entries.map(note => <li>
                 <span class="journey-node" aria-hidden="true">✧</span>
                 <a class="journey-entry" href={url('notes/' + note.id + '/')}>
-                  <div class="journey-entry-meta"><time datetime={note.data.date}>{note.data.dateKind === '导入日期' && '导入 · '}{note.data.date.slice(5).replace('-', ' / ')}</time><span>{note.data.category}</span>{note.data.sample && <small>示例笔记</small>}</div>
+                  <div class="journey-entry-meta"><span>{note.uploadDate ? <time datetime={note.uploaded!}>添加 · {note.uploadDate}</time> : '待上传'}</span><span>{note.data.category}</span>{note.data.sample && <small>示例笔记</small>}</div>
                   <h4>{note.data.title}</h4><p>{note.data.description}</p><span class="journey-read">翻阅这一页 <span aria-hidden="true">↗</span></span>
                 </a>
               </li>)}</ol>
@@ -42,3 +53,38 @@ const monthsFor = (year: string) => [...new Set(notes.filter(note => note.data.d
     </div> : <EmptyJournal kind="route" title="还没有足迹，但方向已经确定。" description="从第一篇手记开始，沿途的学习与发现会按年月汇成一条路线。" />}
   </div>
 </Base>
+<script>
+  // 按原始倒序节点重排所有年月层级；待上传分组固定置顶，选择保存在当前 URL。
+  const select = document.querySelector<HTMLSelectElement>('#archive-order');
+  if (select) {
+    const route = document.querySelector('.journey-route')!;
+    const finish = route.querySelector('.journey-finish')!;
+    const years = Array.from(route.querySelectorAll<HTMLElement>('[data-archive-year]'));
+    const monthGroups = years.map(year => ({ year, months: Array.from(year.querySelectorAll<HTMLElement>('[data-archive-month]')) }));
+    const lists = Array.from(route.querySelectorAll('.journey-entries')).map(list => ({ list, entries: Array.from(list.children) }));
+    const nav = document.querySelector('.journey-index nav')!;
+    const links = Array.from(nav.children);
+    const order = <T,>(items: T[], asc: boolean) => asc ? [...items].reverse() : items;
+    function applyOrder() {
+      const asc = select!.value === 'asc';
+      const pending = years.filter(year => year.dataset.archiveYear === 'pending');
+      const dated = order(years.filter(year => year.dataset.archiveYear !== 'pending'), asc);
+      [...pending, ...dated].forEach(year => route.insertBefore(year, finish));
+      monthGroups.forEach(({ year, months }) => order(months, asc).forEach(month => year.append(month)));
+      lists.forEach(({ list, entries }) => order(entries, asc).forEach(entry => list.append(entry)));
+      [...pending, ...dated].forEach(year => {
+        const link = links.find(link => (link as HTMLAnchorElement).hash === '#' + year.id);
+        if (link) nav.append(link);
+      });
+      const start = route.querySelector('.journey-start')!;
+      start.lastChild!.textContent = asc ? ' 最早的足迹' : ' 最近的足迹';
+    }
+    select.value = new URLSearchParams(location.search).get('order') === 'asc' ? 'asc' : 'desc';
+    applyOrder();
+    select.addEventListener('change', () => {
+      applyOrder();
+      const address = new URL(location.href); address.searchParams.set('order', select.value);
+      history.replaceState(null, '', address);
+    });
+  }
+</script>

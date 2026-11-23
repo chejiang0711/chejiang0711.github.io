@@ -48,7 +48,7 @@
   });
   updateReading();
   // 增强现有代码块而不改动高亮内容；复制只读取 code，避免把工具栏文字带入。
-  document.querySelectorAll<HTMLPreElement>('.prose pre').forEach(pre => {
+  document.querySelectorAll<HTMLPreElement>('.prose pre').forEach((pre, index) => {
     const code = pre.querySelector('code');
     if (!code) return;
     const frame = document.createElement('div');
@@ -71,6 +71,37 @@
     // 横向滚动区域可通过键盘访问，长代码保持原来的缩进与换行。
     pre.tabIndex = 0;
     pre.setAttribute('aria-label', '代码片段，可横向滚动');
+    // 仅折叠超过 20 行的片段；保留完整 code 节点，复制始终读取原文。
+    const lineCount = (code.textContent || '').replace(/\r\n?/g, '\n').replace(/\n$/, '').split('\n').length;
+    if (lineCount > 20) {
+      pre.id ||= 'reader-code-' + index;
+      const viewport = document.createElement('div');
+      viewport.className = 'code-viewport';
+      pre.before(viewport);
+      viewport.append(pre);
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'code-fold-toggle';
+      toggle.setAttribute('aria-controls', pre.id);
+      frame.append(toggle);
+      const setExpanded = (expanded: boolean) => {
+        frame.classList.toggle('is-code-collapsed', !expanded);
+        toggle.setAttribute('aria-expanded', String(expanded));
+        toggle.textContent = expanded ? '收起代码 ↑' : '展开代码 · 共 ' + lineCount + ' 行 ↓';
+      };
+      setExpanded(false);
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+        setExpanded(expanded);
+        if (!expanded) {
+          // 收起后把阅读位置与键盘焦点交回代码顶部，避免停在后续正文。
+          pre.scrollTop = 0;
+          pre.focus({ preventScroll: true });
+          frame.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+        }
+        queueReading();
+      });
+    }
     let resetTimer: ReturnType<typeof setTimeout>;
     copy.addEventListener('click', async () => {
       clearTimeout(resetTimer);

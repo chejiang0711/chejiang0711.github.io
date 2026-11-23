@@ -30,9 +30,17 @@ const latest = notes[0];
   </a>
   <div class="recent-notes"><div class="recent-heading"><span>沿途的记录</span><span>{notes.length} 篇手记</span></div>
     {notes.slice(1, 4).map((note, index) => <a class="recent-note" href={url('notes/' + note.id + '/')}><span class="recent-number" aria-hidden="true">{String(index + 2).padStart(2, '0')}</span><div><span class="recent-meta">{note.data.category} · <time datetime={note.data.date}>{note.data.dateKind === '导入日期' && '导入 · '}{note.data.date.replaceAll('-', '.')}</time>{note.data.sample && ' · 示例'}</span><h3>{note.data.title}</h3></div><span class="recent-arrow" aria-hidden="true">↗</span></a>)}
-    <a class="recent-archive" href={url('archive/')}><span>每一篇，都是走过的足迹。</span><span>查看旅途归档 ↗</span></a>
+    <!-- 首页入口沿用归档页的主题名称，保持导航一致。 -->
+    <a class="recent-archive" href={url('archive/')}><span>每一篇，都是走过的足迹。</span><span>查看沿途足迹 ↗</span></a>
   </div>
 </div> : <EmptyJournal title="等待第一道魔法" description="空白的一页，留给下一次灵感。代码、尝试与发现，都会慢慢写在这里。" />}
   </section>
 
+  <!-- 相册作为首页独立入口，竖图保留完整构图。 -->
+  <section class="wrap gallery-home">
+    <a class="gallery-invitation" href={url('gallery/')}>
+      <div class="gallery-invitation-image"><img src={url('images/gallery/elaina-afternoon-preview.webp')} width="600" height="901" loading="lazy" decoding="async" alt="窗边喝茶的伊蕾娜" /></div>
+      <div class="gallery-invitation-copy"><span class="eyebrow">旅途之外 · 收藏的光</span><h2>魔女的旅途相册 <span aria-hidden="true">✧</span></h2><p>窗边的一杯午后，风里的一次回眸。<br />把喜欢的伊蕾娜，留在这一页。</p><span class="gallery-invitation-link">翻开相册 <span aria-hidden="true">↗</span></span></div>
+    </a>
+  </section>
 </div></Base>

@@ -2,7 +2,7 @@
   // 内容默认可见，仅在首次进入视野时播放；脚本失效也不会留下空白区。
   const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
   const targets = Array.from(document.querySelectorAll<HTMLElement>(
-    '.empty-journal, .shelf-empty, .latest-note, .recent-note, .hero-copy, .section-heading, .note-card, .spellbook-cover, .spellbook-tools, .journey-heading, .journey-year > h2, .journey-entry, .article-header, .next-chapter-heading, .chapter-link, .about-panel, .traveler-passport, .traveler-letter, .traveler-interests, .traveler-departure'
+    '.gallery-invitation, .gallery-heading, .gallery-photo, .empty-journal, .shelf-empty, .related-reading, .latest-note, .recent-note, .hero-copy, .section-heading, .note-card, .spellbook-cover, .spellbook-tools, .journey-heading, .journey-year > h2, .journey-entry, .article-header, .next-chapter-heading, .chapter-link, .about-panel, .traveler-passport, .traveler-letter, .traveler-interests, .traveler-departure'
   ));
   const played = new WeakSet<Element>();
   const active = new Map<HTMLElement, Animation>();

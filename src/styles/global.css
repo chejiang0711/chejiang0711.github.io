@@ -382,3 +382,98 @@ footer{padding:25px 0 28px;gap:18px;font-size:10px;border-top-color:#e9e0ed}.foo
 [data-theme=dark] .shelf-empty{background:radial-gradient(ellipse at 50% 0,#392846,transparent 75%);border-color:#634874}
 [data-theme=dark] .shelf-empty>span{background:#382841;border-color:#674b78;color:#d4aceb}
 @media(max-width:700px){.empty-journal{flex-direction:column;align-items:flex-start;gap:18px;padding:27px}.empty-emblem{flex-basis:auto;width:90px}.empty-copy h2{font-size:20px}.empty-copy>p{font-size:12px}.empty-actions{gap:20px}.empty-route{padding-left:36px}.empty-route:before{left:17px}.shelf-empty{padding:32px 20px}.site-footer{grid-template-columns:1fr;text-align:center;justify-items:center}.site-footer>.footer-nav{grid-column:1;grid-row:3;justify-content:center}.site-footer>small{grid-column:1;grid-row:4}.site-footer>span{grid-row:2}}
+/* 真实技术笔记的章节留白与 API 列表节奏，帮助长文扫读。 */
+.prose>h2{margin-top:48px;padding:14px 18px 14px 22px;border:1px solid #e9deef;border-radius:9px;background:linear-gradient(90deg,#f1e8f7,#fbf8fc);font-size:22px;line-height:1.7}
+.prose>h2:before{top:19px;left:9px;height:calc(100% - 38px);min-height:15px;width:3px}
+.prose>h2:first-child{margin-top:0}.prose>h3{font-size:18px}
+.prose>ol>li,.prose>ul>li{padding-left:5px;margin-block:13px;line-height:2}
+.prose>ol>li::marker{font-weight:600;font-variant-numeric:tabular-nums}
+.prose p>a{overflow-wrap:anywhere;text-underline-offset:4px}
+.toc-count{font-size:9px;font-weight:400;letter-spacing:0;padding:3px 6px;background:#eee3f5;border-radius:4px;margin-left:5px;color:#9973ad}
+.toc-links a{display:flex;align-items:flex-start;gap:9px}.toc-number{font-size:9px;line-height:2.2;flex-shrink:0;font-variant-numeric:tabular-nums;opacity:.6}.toc-links a>span:last-child{min-width:0}
+.toc-links a[aria-current=location] .toc-number{opacity:1}
+[data-theme=dark] .prose>h2{background:linear-gradient(90deg,#33253f,#251d2d);border-color:#503b5c;color:#e1cbef}
+[data-theme=dark] .toc-count{background:#44304f;color:#cbaaDE}
+@media(max-width:700px){.prose>h2{font-size:19px;padding:12px 15px 12px 21px;margin-top:35px}.prose>h2:before{top:17px;height:calc(100% - 34px)}.prose>ol>li,.prose>ul>li{margin-block:11px}.toc-links a{padding-block:10px}}
+/* 卡片去除浮动小图标，分类色仅作为细线与标签圆点，日期占据右上方。 */
+.note-color-line{height:3px;flex-shrink:0;background:var(--category-color,#b391c5);opacity:.7}
+.note-card .meta{padding-right:0;justify-content:space-between;align-items:center;gap:10px;font-size:10px}
+.note-card .note-category-pill{display:inline-flex;align-items:center;gap:7px;padding:4px 9px;border:1px solid #e6daee;border-radius:6px;background:#f7f1fa;color:#8a699c;max-width:100%}
+.note-category-pill:before{content:"";width:4px;height:4px;flex-shrink:0;border-radius:50%;background:var(--category-color,#b391c5)}
+.note-card .meta time{font-size:10px;color:#a48eaf;font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.notes-grid .note-card .card-body{padding:24px 25px 19px}
+.notes-grid .note-card h3{font-size:19px;line-height:1.7;margin:19px 0 10px}
+.notes-grid .note-card p{font-size:12px;line-height:2;margin-bottom:25px}
+.note-card .card-bottom{gap:15px;padding-top:16px;align-items:center}
+.note-tagline{font-size:10px;line-height:1.8;min-width:0;overflow-wrap:anywhere;color:#a38aad}
+.note-card .card-bottom .note-read-link{display:inline-flex;align-items:center;gap:9px;flex-shrink:0;font-size:11px;padding:5px 0;color:#926ba5}
+.note-read-link>span{font-size:17px;line-height:1}
+[data-theme=dark] .note-card .note-category-pill{background:#38293f;border-color:#523d5d;color:#c7abd8}
+[data-theme=dark] .note-card .meta time{color:#ad98ba}
+[data-theme=dark] .note-card .card-bottom .note-read-link{color:#d0ace5}
+[data-theme=dark] .note-tagline{color:#b19abe}
+@media(max-width:700px){.notes-grid .note-card .card-body{padding:20px}.notes-grid .note-card h3{font-size:17px;margin-top:16px}.note-card .meta{gap:8px}.note-card .card-bottom{flex-wrap:wrap}.note-card .card-bottom .note-read-link{margin-left:auto}}
+/* 分类标题与返回入口一起表达当前范围，长路径不挤压搜索框。 */
+.spellbook-tools>div:first-child{min-width:0}.spellbook-tools #shelf-title{overflow-wrap:anywhere;line-height:1.6}
+.category-reset{display:inline-block;margin-top:10px;font-size:11px;color:#9571a7;padding:4px 0}
+.related-reading{margin-top:37px;padding:27px;border:1px solid #e4d5ec;border-radius:14px;background:linear-gradient(130deg,#f7f0fa,#fdfafd)}
+.related-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:19px}
+.related-heading h2{font-size:20px;line-height:1.6;color:#755287;margin:8px 0 0;overflow-wrap:anywhere}.related-heading>a{font-size:11px;color:#9770a8;white-space:nowrap}
+.related-entry{display:flex;align-items:center;gap:20px;padding:19px 0;border-top:1px solid #e6d9ed}
+.related-index{font:24px Georgia,serif;color:#c4a8d4;flex-shrink:0}.related-entry>div{flex:1;min-width:0}.related-entry h3{font-size:16px;line-height:1.8;color:#6d4f7d;margin:0;overflow-wrap:anywhere}.related-entry p{font-size:12px;line-height:1.9;color:#977fa3;margin:7px 0}.related-meta{font-size:10px;color:#a18aaf}.related-arrow{font-size:22px;color:#ae8bc2}.related-entry:last-child{padding-bottom:0}
+.related-entry:hover h3,.category-reset:hover{color:var(--accent)}
+[data-theme=dark] .related-reading{background:linear-gradient(130deg,#30223a,#251d2d);border-color:#523b60}
+[data-theme=dark] :is(.related-heading h2,.related-entry h3){color:#dfc7ef}
+[data-theme=dark] :is(.related-heading>a,.related-entry p,.related-meta,.category-reset){color:#bfa2ce}
+[data-theme=dark] .related-entry{border-color:#4c3659}
+@media(max-width:700px){.related-reading{padding:21px;margin-top:28px}.related-heading{align-items:flex-start;flex-direction:column;gap:10px}.related-heading h2{font-size:18px}.related-entry{gap:13px}.related-entry h3{font-size:15px}.related-index{font-size:20px}}
+/* 排序控制与归档标题分层，原生下拉支持键盘和移动端操作。 */
+.archive-sort{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:28px;padding:18px 22px;border:1px solid var(--line);border-radius:12px;background:#f6effa}
+.archive-sort strong{font-size:13px;color:#79568e}.archive-sort p{font-size:11px;color:#9982a6;line-height:1.8;margin:7px 0 0}
+.archive-sort label{display:flex;align-items:center;gap:10px;font-size:11px;color:#93769f;flex-shrink:0}
+.archive-sort select{font:inherit;color:#79568e;background:#fff;border:1px solid #dcc9e7;border-radius:7px;padding:10px;cursor:pointer}
+.archive-sort select:focus-visible{outline:2px solid #b392c7;outline-offset:3px}
+[data-theme=dark] .archive-sort{background:#2b2035}
+[data-theme=dark] .archive-sort select{background:#3c2b47;border-color:#654874;color:#dcc0ed}
+[data-theme=dark] .archive-sort strong{color:#ddc2ed}
+@media(max-width:700px){.archive-sort{flex-direction:column;align-items:stretch;padding:17px}.archive-sort label{justify-content:space-between}}
+/* 归档排序只保留紧凑下拉框，不再用整块说明卡占据纵向空间。 */
+.journey-page .archive-sort{display:flex;flex-direction:row;justify-content:flex-end;margin:20px 0 0;padding:0;border:0;background:transparent;gap:0;border-radius:0}
+.archive-sort select{font-size:11px;padding:9px 12px;border-radius:8px}
+/* 排序靠足迹标题右侧对齐，窄屏也保持紧凑的一行。 */
+.journey-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:36px}
+.journey-toolbar .journey-start{flex-shrink:0}
+.journey-page .journey-toolbar .archive-sort{margin:0;flex-shrink:0}
+/* 用暮紫渐变与柔光表达魔法氛围，移除重复的月弧和星形水印。 */
+.journey-entry{isolation:isolate;overflow:hidden;border-color:#ddc5ea;background:radial-gradient(ellipse at 100% 0,#dfc5ef85,transparent 65%),linear-gradient(115deg,#f3e9fb,#f9edf4);box-shadow:0 4px 18px #88589908}
+.journey-entry-meta>span{background:#fff6;border:1px solid #d9c2e755}
+.journey-entry .journey-read{padding-top:14px;border-top:1px solid #d9c3e44d}
+[data-theme=dark] .journey-entry{background:radial-gradient(ellipse at 100% 0,#65407566,transparent 65%),linear-gradient(115deg,#30203e,#352338);border-color:#624172;box-shadow:0 6px 22px #0002}
+[data-theme=dark] .journey-entry-meta>span{background:#4b305666;border-color:#79548955}
+[data-theme=dark] .journey-entry .journey-read{border-color:#9560aa33}
+/* 悬停轻微上浮并显现柔光；减少动态效果时保持静止。 */
+@media(hover:hover) and (pointer:fine){.journey-entry:hover{transform:translateY(-3px);border-color:#c6a2dc;box-shadow:0 8px 24px #a078bd24}[data-theme=dark] .journey-entry:hover{border-color:#9870af;box-shadow:0 8px 24px #b785d51c}}
+@media(prefers-reduced-motion:reduce){.journey-entry:hover{transform:none}}
+
+/* 长代码默认展示十二行；渐隐层只作提示，不拦截横向滚动和点击。 */
+.code-viewport{position:relative;min-width:0}
+.prose .is-code-collapsed pre{max-height:calc(12 * 1.9em + 44px);overflow-y:hidden}
+.is-code-collapsed .code-viewport:after{content:"";position:absolute;inset:auto 0 0;height:48px;background:linear-gradient(transparent,#24292e);pointer-events:none}
+/* 保持渐变图层和不透明底色，悬停只过渡颜色，避免露出代码框的深色背景。 */
+.code-fold-toggle{display:block;width:100%;min-height:44px;padding:12px 16px;border:0;border-top:1px solid #d9c6e6;background-color:#f2e7f9;background-image:linear-gradient(110deg,transparent,#ffffff66);color:#79518f;font-size:12px;letter-spacing:.5px;cursor:pointer;transition:background-color .18s,color .18s}
+.code-fold-toggle:hover{background-color:#eaddf3;color:#5e3b73}
+.code-fold-toggle:focus-visible{outline:2px solid #b392c7;outline-offset:-4px}
+[data-theme=dark] .code-fold-toggle{background-color:#392a45;background-image:linear-gradient(110deg,transparent,#00000026);border-color:#594066;color:#dec0ed}
+[data-theme=dark] .code-fold-toggle:hover{background-color:#493254;color:#f1dfff}
+@media(max-width:700px){.prose .is-code-collapsed pre{max-height:calc(12 * 1.9em + 34px)}}
+@media(prefers-reduced-motion:reduce){.code-fold-toggle{transition:none}}
+
+/* 相册使用完整比例的画框和柔光底色，首页竖图独立陈列而不裁切人物。 */
+.gallery-home{padding-block:48px 64px}.gallery-invitation{display:grid;grid-template-columns:240px minmax(0,1fr);gap:52px;align-items:center;padding:28px;background:radial-gradient(ellipse at 85% 10%,#e4d3ef88,transparent 70%),#f6eff8;border:1px solid #e3d2ec;border-radius:20px;overflow:hidden;box-shadow:0 12px 36px #8059990a;transition:box-shadow .2s,border-color .2s}
+.gallery-invitation-image{overflow:hidden;border-radius:12px}.gallery-invitation img{display:block;width:100%;height:auto}.gallery-invitation-copy{padding:20px 30px 20px 0}.gallery-invitation h2{font-size:30px;line-height:1.6;color:#715080;margin:16px 0}.gallery-invitation h2 span{font-weight:400;color:#b093c2}.gallery-invitation p{font-size:14px;line-height:2.2;color:#92799e}.gallery-invitation-link{display:inline-flex;gap:35px;margin-top:24px;padding-bottom:8px;border-bottom:1px solid #cdb3dc;font-size:13px;color:#79568e}.gallery-invitation:hover{box-shadow:0 16px 40px #80599919;border-color:#c9a9da}
+.gallery-page{padding-block:48px 70px;max-width:1120px}.gallery-heading{padding:38px 42px;border:1px solid #e4d3ed;border-radius:18px;background:radial-gradient(ellipse at 90% 0,#e6d1f080,transparent 65%),linear-gradient(120deg,#f4ecf9,#fcf7fa);margin-bottom:38px}.gallery-heading h1{font-size:36px;line-height:1.5;color:#6d4c7d;margin:18px 0}.gallery-heading h1 span{color:#b499c4;font-weight:400}.gallery-heading p{font-size:14px;line-height:2;color:#947b9f}.gallery-count{display:inline-block;margin-top:12px;font-size:11px;color:#9774aa}.gallery-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}.gallery-photo{min-width:0;margin:0;padding:12px;border-radius:16px;background:#f5edf8;border:1px solid #e3d2eb;box-shadow:0 10px 30px #7d598710}.gallery-open{display:block;border-radius:10px;overflow:hidden;cursor:zoom-in}.gallery-open img{display:block;width:100%;height:auto;transition:filter .25s}.gallery-open:hover img{filter:brightness(1.04)}.gallery-photo figcaption{padding:23px 14px 15px}.gallery-photo h2{font-size:22px;margin:12px 0;color:#70517f}.gallery-photo p{font-size:13px;line-height:2;color:#947e9e;margin-bottom:0}.gallery-ending{text-align:center;font-size:12px;color:#a18aad;margin:45px 0 0;line-height:2}.gallery-ending span{margin-left:12px}
+.gallery-viewer{width:min(1100px,94vw);max-width:94vw;max-height:94dvh;padding:0;border:1px solid #9d80ad;border-radius:14px;background:#211b28;color:#ecddf5;box-shadow:0 24px 80px #0006}.gallery-viewer::backdrop{background:#17101ed9;backdrop-filter:blur(8px)}.gallery-viewer-bar{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px 18px;font-size:13px}.gallery-viewer button{border:1px solid #745785;border-radius:7px;background:#40304d;color:#efdef8;padding:9px 14px;cursor:pointer}.gallery-viewer>img{display:block;width:100%;height:calc(90dvh - 64px);object-fit:contain;background:#19141e}
+[data-theme=dark] :is(.gallery-invitation,.gallery-heading){background:radial-gradient(ellipse at 85% 10%,#5f3d7055,transparent 70%),#2a2032;border-color:#533c62}[data-theme=dark] .gallery-photo{background:#2c2234;border-color:#533d61}[data-theme=dark] :is(.gallery-invitation h2,.gallery-heading h1,.gallery-photo h2){color:#e0c8ed}[data-theme=dark] :is(.gallery-invitation p,.gallery-heading p,.gallery-photo p,.gallery-count,.gallery-ending){color:#bda4cc}[data-theme=dark] .gallery-invitation-link{color:#d4b1e7;border-color:#78518c}
+@media(max-width:1000px){.header-inner{flex-wrap:wrap}.header-inner .main-nav{flex-wrap:wrap;justify-content:center;gap:12px}.gallery-invitation{gap:28px}.gallery-invitation h2{font-size:25px}}
+@media(max-width:700px){.gallery-home{padding-block:30px 40px}.gallery-invitation{grid-template-columns:1fr;padding:18px;gap:10px}.gallery-invitation-image{width:min(100%,260px);justify-self:center}.gallery-invitation-copy{padding:16px 6px}.gallery-invitation h2{font-size:23px}.gallery-page{padding-block:28px 45px}.gallery-heading{padding:26px 23px}.gallery-heading h1{font-size:28px}.gallery-grid{grid-template-columns:1fr;gap:25px}.gallery-photo figcaption{padding:20px 10px}.gallery-viewer-bar{padding:10px 12px}}
+@media(prefers-reduced-motion:reduce){.gallery-invitation,.gallery-open img{transition:none}}

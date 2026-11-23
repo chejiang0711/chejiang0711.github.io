@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/notes';
+import { gallery } from '../data/gallery';
+---
+<Base title="魔女的旅途相册" description="收藏伊蕾娜的沿途光景，留住旅途中温柔的一瞬。">
+  <div class="wrap gallery-page">
+    <header class="gallery-heading"><span class="eyebrow">沿途光景 · ELAINA’S JOURNEY</span><h1>魔女的旅途相册 <span aria-hidden="true">✧</span></h1><p>旅途不只有目的地，<br />还有那些想要好好收藏的瞬间。</p><span class="gallery-count">已收藏 {gallery.length} 帧光景</span></header>
+    <!-- 图片按自身比例显示；无脚本时链接仍可打开完整图片。 -->
+    <div class="gallery-grid">{gallery.map((photo, index) => <figure class="gallery-photo">
+      <a class="gallery-open" href={url(photo.image)} data-title={photo.title} aria-label={'放大查看：' + photo.title}><img src={url(photo.thumbnail)} width={photo.width} height={photo.height} alt={photo.alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" /></a>
+      <figcaption><span class="eyebrow">FRAME {String(index + 1).padStart(2, '0')} · {photo.note}</span><h2>{photo.title}</h2><p>{photo.caption}</p></figcaption>
+    </figure>)}</div>
+    <p class="gallery-ending">下一站的风景，留给下一次相遇。 <span aria-hidden="true">✧</span></p>
+  </div>
+  <!-- 原生对话框支持 Escape 和焦点约束，关闭后回到对应图片。 -->
+  <dialog class="gallery-viewer" aria-labelledby="gallery-viewer-title"><div class="gallery-viewer-bar"><span id="gallery-viewer-title"></span><button type="button" aria-label="关闭图片预览">关闭 ×</button></div><img alt="" /></dialog>
+</Base>
+<script>
+  const viewer = document.querySelector<HTMLDialogElement>('.gallery-viewer')!;
+  const image = viewer.querySelector('img')!;
+  const title = viewer.querySelector('#gallery-viewer-title')!;
+  let trigger: HTMLAnchorElement | null = null;
+  let overflow = '';
+  document.querySelectorAll<HTMLAnchorElement>('.gallery-open').forEach(link => {
+    link.addEventListener('click', event => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      trigger = link;
+      image.src = link.href; image.alt = link.querySelector('img')!.alt;
+      title.textContent = link.dataset.title || '旅途相册';
+      overflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      viewer.showModal();
+    });
+  });
+  viewer.querySelector('button')!.addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', event => { if (event.target === viewer) viewer.close(); });
+  viewer.addEventListener('close', () => { document.body.style.overflow = overflow; trigger?.focus({ preventScroll: true }); });
+</script>
