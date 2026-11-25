@@ -1,6 +1,9 @@
 ---
 import EmptyJournal from '../components/EmptyJournal.astro';
 import Base from '../layouts/Base.astro';
+import { gallery } from '../data/gallery';
+// 首页封面与相册首张共享数据，新增收藏后无需重复更新图片和文案。
+const cover = gallery[0];
 
 import { getNotes, url } from '../lib/notes';
 const notes = await getNotes();
@@ -37,10 +40,10 @@ const latest = notes[0];
   </section>
 
   <!-- 相册作为首页独立入口，竖图保留完整构图。 -->
-  <section class="wrap gallery-home">
+  {cover && <section class="wrap gallery-home">
     <a class="gallery-invitation" href={url('gallery/')}>
-      <div class="gallery-invitation-image"><img src={url('images/gallery/elaina-afternoon-preview.webp')} width="600" height="901" loading="lazy" decoding="async" alt="窗边喝茶的伊蕾娜" /></div>
-      <div class="gallery-invitation-copy"><span class="eyebrow">旅途之外 · 收藏的光</span><h2>魔女的旅途相册 <span aria-hidden="true">✧</span></h2><p>窗边的一杯午后，风里的一次回眸。<br />把喜欢的伊蕾娜，留在这一页。</p><span class="gallery-invitation-link">翻开相册 <span aria-hidden="true">↗</span></span></div>
+      <div class="gallery-invitation-image"><img src={url(cover.thumbnail)} width={cover.width} height={cover.height} loading="lazy" decoding="async" alt={cover.alt} /></div>
+      <div class="gallery-invitation-copy"><span class="eyebrow">魔女剪影 · 最新收藏</span><h2>{cover.title} <span aria-hidden="true">✧</span></h2><p>{cover.caption}</p><span class="gallery-invitation-link">翻开相册 <span aria-hidden="true">↗</span></span></div>
     </a>
-  </section>
+  </section>}
 </div></Base>
